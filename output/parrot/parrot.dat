@@ -1,0 +1,60 @@
+RECTANGLE(-4,-5,4,4)
+RECTBMP(800,900)
+ARGUMENT x,y
+
+// Только окружности и прямые через две точки.
+// Окружность: 1-((x-cx)/r)^2-((y-cy)/r)^2.
+// Прямая: (y1-y2)*x-(x1-x2)*y+(y2*x1-y1*x2).
+// Вершины многоугольников идут против часовой стрелки.
+
+// Тело и голова — окружности
+FUNCTION Body=1-((x-(-0.25))/1.6)^2-((y-(0.25))/1.6)^2
+FUNCTION Head=1-((x-(0.15))/1.0)^2-((y-(2.05))/1.0)^2
+
+// Tail: координаты вершин
+CONSTANT tx1=-1.25, ty1=-4.0, tx2=0.35, ty2=-0.95, tx3=-0.8, ty3=-0.95
+FUNCTION TailL1=(ty1-ty2)*x-(tx1-tx2)*y+(ty2*tx1-ty1*tx2)
+FUNCTION TailL2=(ty2-ty3)*x-(tx2-tx3)*y+(ty3*tx2-ty2*tx3)
+FUNCTION TailL3=(ty3-ty1)*x-(tx3-tx1)*y+(ty1*tx3-ty3*tx1)
+FUNCTION Tail=TailL1&TailL2&TailL3
+
+// Клюв: окружность, полуплоскость и вычитание окружности
+FUNCTION BeakCircle=1-((x-(1))/1.05)^2-((y-(2.05))/1.05)^2
+CONSTANT bx1=0.68, by1=3, bx2=0.68, by2=1
+FUNCTION BeakSide=(by1-by2)*x-(bx1-bx2)*y+(by2*bx1-by1*bx2)
+FUNCTION BeakOuter=BeakCircle&BeakSide
+FUNCTION BeakCut=1-((x-(1.76))/0.66)^2-((y-(1.45))/0.66)^2
+FUNCTION Beak=BeakOuter&(-BeakCut)
+
+// Leg: координаты вершин
+CONSTANT lx1=-0.32, ly1=-2.05, lx2=0.28, ly2=-2.05, lx3=0.28, ly3=-1.12, lx4=-0.32, ly4=-1.12
+FUNCTION LegL1=(ly1-ly2)*x-(lx1-lx2)*y+(ly2*lx1-ly1*lx2)
+FUNCTION LegL2=(ly2-ly3)*x-(lx2-lx3)*y+(ly3*lx2-ly2*lx3)
+FUNCTION LegL3=(ly3-ly4)*x-(lx3-lx4)*y+(ly4*lx3-ly3*lx4)
+FUNCTION LegL4=(ly4-ly1)*x-(lx4-lx1)*y+(ly1*lx4-ly4*lx1)
+FUNCTION Leg=LegL1&LegL2&LegL3&LegL4
+
+// Perch: координаты вершин
+CONSTANT px1=-3, py1=-2.25, px2=3, py2=-2.25, px3=3, py3=-2, px4=-3, py4=-2
+FUNCTION PerchL1=(py1-py2)*x-(px1-px2)*y+(py2*px1-py1*px2)
+FUNCTION PerchL2=(py2-py3)*x-(px2-px3)*y+(py3*px2-py2*px3)
+FUNCTION PerchL3=(py3-py4)*x-(px3-px4)*y+(py4*px3-py3*px4)
+FUNCTION PerchL4=(py4-py1)*x-(px4-px1)*y+(py1*px4-py4*px1)
+FUNCTION Perch=PerchL1&PerchL2&PerchL3&PerchL4
+
+
+// Крыло и глаз — окружности
+FUNCTION WingOuter=1-((x-(-0.42))/0.9)^2-((y-(0.3))/0.9)^2
+FUNCTION WingInner=1-((x-(-0.28))/0.82)^2-((y-(0.38))/0.82)^2
+CONSTANT kx1=1, ky1=0.6, kx2=-1, ky2=0.6
+FUNCTION WingSide=(ky1-ky2)*x-(kx1-kx2)*y+(ky2*kx1-ky1*kx2)
+FUNCTION WingLine=WingOuter&(-WingInner)&WingSide
+
+FUNCTION Eye=1-((x-(0.58))/0.17)^2-((y-(2.42))/0.17)^2
+FUNCTION Pupil=1-((x-(0.62))/0.07)^2-((y-(2.42))/0.07)^2
+
+// Сборка фигуры. Вычитание: A&(-B).
+FUNCTION Bird=Body|Head|Tail|Beak|Leg|Perch
+FUNCTION Details=Eye|WingLine
+FUNCTION W=(Bird&(-Details))|Pupil
+RETURN W
