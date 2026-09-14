@@ -1,0 +1,9 @@
+.git
+output
+*.exe
+web/.git
+web/.next
+web/node_modules
+web/npm-debug.log*
+web/tsconfig.tsbuildinfo
+web/.env*

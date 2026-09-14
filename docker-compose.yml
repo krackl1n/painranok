@@ -1,7 +1,7 @@
 services:
   web:
     build:
-      context: ./web
+      context: .
       dockerfile: Dockerfile
     image: paintranok-web:latest
     environment:
